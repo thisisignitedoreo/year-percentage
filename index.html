@@ -66,8 +66,8 @@
 		}
 		day += date.getDate();
 		
+		document.getElementById("year").innerHTML = `Current year: ${date.getFullYear()} (${date.getFullYear() % 4 === 0 ? 'leap' : 'not leap'})`;
 		document.getElementById("percentage").innerHTML = `Year percentage: ${decimalAdjust("round", day / days_in_year * 100, -2)}% (day ${day})`;
-		document.getElementById("year").innerHTML = `Current year: ${date.getFullYear()}`;
 		
 		// print(f"[{''.join(['#' if i / pb_len < value / max_value else ' ' for i in range(pb_len)])}], {round(value / max_value * 100)}%", end="\r")
 
