@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Year Percentage</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Mono&display=swap');
+		* {
+			background-color: #181818;
+			color: whitesmoke;
+			font-family: Lato, sans-serif;
+		}
+		.big_text {
+			font-size: 32px;
+		}
+		code {
+			padding: 8px;
+			border-radius: 8px;
+			border: 2px solid #343434;
+			background-color: #252525;
+			color: white;
+			font-family: "Noto Sans Mono", monospace;
+		}
+	</style>
+</head>
+<body>
+	<div style="text-align: center;">
+		<p class="big_text" id="year">Current year: {}</p>
+		<p class="big_text" id="percentage">Year percentage: {}% (day {})</p>
+		<canvas width="500" height="50" id="percentage_canvas" style="border: 5px solid darkgrey; border-radius: 5px;"></canvas>
+		<p class="big_text">Copy this to any social media:</p>
+		<code id="social">
+			Year percentage: {}%
+			[{}] {}%
+		</code><br><br>
+		Length: <input type="number" id="pb_length" value="10"><br>
+		Fill Charachter: <input type="text" id="pb_fill" value="🟩"><br>
+		Blank Charachter: <input type="text" id="pb_blank" value="⬜"><br>
+		<button onclick="generate_progressbar()">Apply</button>
+	</div>
+	<script>
+		// borrowed from https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/round
+		function decimalAdjust(type, value, exp) {
+			if (typeof exp === 'undefined' || +exp === 0) {
+			  return Math[type](value);
+			}
+			value = +value;
+			exp = +exp;
+			if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+			  return NaN;
+			}
+			value = value.toString().split('e');
+			value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+			value = value.toString().split('e');
+			return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+		}
+
+		const date = new Date();
+		const months = [31, date.getFullYear() % 4 === 0 ? 28 : 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+		const days_in_year = date.getFullYear() % 4 === 0 ? 366 : 365;
+		var day = 0;
+		for (var i = 0; i < date.getMonth(); i++) {
+			day += months[i];
+		}
+		day += date.getDate();
+		
+		document.getElementById("percentage").innerHTML = `Year percentage: ${decimalAdjust("round", day / days_in_year * 100, -2)}% (day ${day})`;
+		document.getElementById("year").innerHTML = `Current year: ${date.getFullYear()}`;
+		
+		// print(f"[{''.join(['#' if i / pb_len < value / max_value else ' ' for i in range(pb_len)])}], {round(value / max_value * 100)}%", end="\r")
+
+		function generate_progressbar() {
+			const progressbar_length = document.getElementById("pb_length").value;
+			const progressbar_full = document.getElementById("pb_fill").value;
+			const progressbar_blank = document.getElementById("pb_blank").value;
+
+			const progressbar = (() => {let string = ''; for (var i = 0; i < progressbar_length; i++) {string += (i / progressbar_length < day / days_in_year) ? progressbar_full : progressbar_blank} return string;})();
+
+			document.getElementById("social").innerHTML = `${progressbar} ${decimalAdjust("round", day / days_in_year * 100, -2)}%`;
+		}
+
+		generate_progressbar();
+
+		var canvas = document.getElementById('percentage_canvas');
+		var ctx = canvas.getContext('2d');
+
+		ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, 500, 50);
+		ctx.fillStyle = "rgb(0, 200, 0)";
+        ctx.fillRect(0, 0, Math.round(day / days_in_year * 500), 50);
+		
+		ctx.fillStyle = "rgb(255, 255, 255, 0.2)";
+		ctx.beginPath();
+		ctx.moveTo(50, 0);
+		ctx.lineTo(50, 50);
+		ctx.moveTo(100, 0);
+		ctx.lineTo(100, 50);
+		ctx.moveTo(150, 0);
+		ctx.lineTo(150, 50);
+		ctx.moveTo(200, 0);
+		ctx.lineTo(200, 50);
+		ctx.moveTo(250, 0);
+		ctx.lineTo(250, 50);
+		ctx.moveTo(300, 0);
+		ctx.lineTo(300, 50);
+		ctx.moveTo(350, 0);
+		ctx.lineTo(350, 50);
+		ctx.moveTo(400, 0);
+		ctx.lineTo(400, 50);
+		ctx.moveTo(450, 0);
+		ctx.lineTo(450, 50);
+		ctx.closePath();
+		ctx.stroke();
+	</script>
+</body>
+</html>
